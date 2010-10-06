@@ -31,4 +31,4 @@ The enumerated type corresponding to an enumClass consists of the static consts 
 that are of type enumClass and are tagged with [Enum].  The Enum tag allows an optional integer parameter named "ordinal".
 
 In addition, the class must call Enumeration.map() as a static initializer, with itself as argument;
-for example a class MYEnum should call Enumeration.map(MyEnum).
+for example a class MyEnum should call Enumeration.map(MyEnum).
