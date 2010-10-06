@@ -1,0 +1,30 @@
+Goals for enum implementation
+-----------------------------
+
+finite: 
+
+closed: programmer may neither add nor remove values at run time
+
+generic: an enumerated type should not be required to extend any particular base class,
+	nor should its constructor be required to have any particular parameter types
+
+derivable: ability to define a derived enumerated type each of whose values IS-A parent enumerated type
+
+orderable: programmer should be able to specify an ordering on the set if desired
+
+iterable: programmer should be able to iterate over the values of the type
+	or over the union of the values of more than one type (derived or not),
+	in the order (if any) that the programmer has specified
+
+non-exclusive: programmer should be able to declare other public static members of the class that are not
+	included in the set of enumerated values, for example a default value referring to one of the enumerated values
+
+serializable:  ability to write an enum value to a stream and read back the identical value object
+
+
+
+Implementation
+--------------
+
+The enumerated type corresponding to an enumClass consists of the static consts of the enumClass
+that are of type enumClass and are tagged with [Enum].  The Enum tag allows an optional integer parameter named "ordinal".
