@@ -17,7 +17,8 @@ iterable: programmer should be able to iterate over the values of the type
 	in the order (if any) that the programmer has specified
 
 non-exclusive: programmer should be able to declare other public static members of the class that are not
-	included in the set of enumerated values, for example a default value referring to one of the enumerated values
+	included in the set of enumerated values, for example a default value referring to one of the enumerated
+	values
 
 serializable:  ability to write an enum value to a stream and read back the identical value object
 
@@ -28,3 +29,6 @@ Implementation
 
 The enumerated type corresponding to an enumClass consists of the static consts of the enumClass
 that are of type enumClass and are tagged with [Enum].  The Enum tag allows an optional integer parameter named "ordinal".
+
+In addition, the class must call Enumeration.map() as a static initializer, with itself as argument;
+for example a class MYEnum should hae the call Enumeration.map(MyEnum).
