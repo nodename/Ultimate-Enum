@@ -1,5 +1,5 @@
-Goals for enum implementation
------------------------------
+Goals
+-----
 
 finite: 
 
@@ -10,7 +10,8 @@ generic: an enumerated type should not be required to extend any particular base
 
 derivable: ability to define a derived enumerated type each of whose values IS-A parent enumerated type
 
-orderable: programmer should be able to specify an ordering on the set if desired
+orderable: programmer should be able to specify an ordering on the set if desired. There shall
+	be no implicit ordering based on the order of declaration.
 
 iterable: programmer should be able to iterate over the values of the type
 	or over the union of the values of more than one type (derived or not),
