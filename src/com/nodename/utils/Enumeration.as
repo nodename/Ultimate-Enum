@@ -1,26 +1,3 @@
-/*Goals for enum implementation
-
-finite: 
-
-closed: programmer may neither add nor remove values at run time
-
-generic: an enumerated type should not be required to extend any particular base class,
-nor should its constructor be required to have any particular parameter types
-
-derivable: ability to define a derived enumerated type each of whose values IS-A parent enumerated type
-
-iterable: programmer should be able to iterate over the values of the type
-or over the union of the values of more than one type (derived or not)
-
-orderable: programmer should be able to specify an ordering on the set, or not
-
-non-exclusive: programmer should be able to declare other public static members of the class that are not
-included in the set of enumerated values, for example a default value referring to one of the enumerated values
-
-serializable:  ability to write an enum value to a stream and read back the identical value object
-*/
-
-
 package com.nodename.utils
 {
 	import flash.utils.describeType;
@@ -39,6 +16,17 @@ package com.nodename.utils
 		{
 			flexDescribeType = DescribeTypeCache["describeType"];
 		}
+		private static function describe(cls:Class):XML
+		{
+			if (flexDescribeType != null)
+			{
+				return flexDescribeType(cls).typeDescription;
+			}
+			else
+			{
+				return describeType(cls);
+			}
+		}
 
 		public function Enumeration()
 		{
@@ -47,7 +35,8 @@ package com.nodename.utils
 		
 		/**
 		 * @param enumClasses: one or more Classes
-		 * This function requires that the enum values in each enumClass be static consts of type enumClass tagged with [Enum]
+		 * The enumerated type corresponding to an enumClass consists of the static consts of the enumClass
+		 * that are of type enumClass and are tagged with [Enum]
 		 */
 		public static function values(...enumClasses):Array
 		{
@@ -58,8 +47,14 @@ package com.nodename.utils
 				const enumClass:Class = enumClasses[i] as Class;
 				if (enumClass)
 				{
-					map(enumClass);
-					result = result.concat(_valueListsByEnumClass[enumClass]);
+					if (enumClass in _valueListsByEnumClass)
+					{
+						result = result.concat(_valueListsByEnumClass[enumClass]);
+					}
+					else
+					{
+						throw new EnumerationError("no enum values detected in " + enumClass + ": did you call Enumeration.registerClass()?");
+					}
 				}
 				else
 				{
@@ -76,13 +71,11 @@ package com.nodename.utils
 		
 		public static function ordinal(enumValue:Object):int
 		{
-			map(enumValue.constructor as Class);
 			return _ordinalsByEnumValue[enumValue];
 		}
 		
 		public static function nameOf(enumValue:Object):String
 		{
-			map(enumValue.constructor as Class);
 			return _namesByEnumValue[enumValue];
 		}
 		
@@ -122,37 +115,31 @@ package com.nodename.utils
 			return owner[valueName];
 		}
 		
-		// enumClass -> Array of enumClass's values ordered by ordinal
+		// enumClass -> Array of enumClass's enumValues ordered by ordinal
 		private static const _valueListsByEnumClass:Dictionary = new Dictionary(true);
 		
 		// enumValue -> its name
 		// e.g. SomeClass.A -> "A"
 		private static const _namesByEnumValue:Dictionary = new Dictionary(true);
 		
+		// enumValue -> its ordinal
 		private static const _ordinalsByEnumValue:Dictionary = new Dictionary(true);
 		
-		private static const NOT_AN_ENUM_VALUE:int = int.MIN_VALUE;
+		// static consts with no enum tag are omitted from the enumList:
+		private static const NO_ENUM_TAG:int = int.MIN_VALUE;
 		
 		// enum values with no ordinal are sorted after those with an ordinal:
 		private static const NO_ORDINAL:int = int.MAX_VALUE;
 		
 		
-		private static function map(enumClass:Class):void
+		public static function registerClass(enumClass:Class):void
 		{
 			if (enumClass in _valueListsByEnumClass)
 			{
 				return;
 			}
 			
-			var desc:XML;
-			if (flexDescribeType != null)
-			{
-				desc = flexDescribeType(enumClass).typeDescription;
-			}
-			else
-			{
-				desc = describeType(enumClass);
-			}
+			var desc:XML = describe(enumClass);
 			
 			const xmlTypeConstants:XMLList = desc.constant;
 			const xmlNames:XMLList = xmlTypeConstants.@name;
@@ -168,7 +155,7 @@ package com.nodename.utils
 				{
 					const xmlTypeConstant:XML = xmlTypeConstants[i];
 					const constantOrdinal:int = enumOrdinal(xmlTypeConstant);
-					if (constantOrdinal != NOT_AN_ENUM_VALUE)
+					if (constantOrdinal != NO_ENUM_TAG)
 					{
 						_ordinalsByEnumValue[constantValue] = constantOrdinal;
 						_namesByEnumValue[constantValue] = constantName;
@@ -194,6 +181,8 @@ package com.nodename.utils
 			// and thus the comparison operators will work on all our enums.
 			//
 			// If you feel this is too twicky then comment it out. You can define it explicitly in your enum classes if you wish.
+			// Even if you do accept this, you can still hide this implementation by defining another valueOf() in the normal
+			// way directly on any specific class.
 			enumClass.prototype.valueOf = valueOf;
 			
 			function enumOrdinal(node:XML):int
@@ -208,7 +197,7 @@ package com.nodename.utils
 					}
 					return NO_ORDINAL;
 				}
-				return NOT_AN_ENUM_VALUE;
+				return NO_ENUM_TAG;
 			}
 		}
 		

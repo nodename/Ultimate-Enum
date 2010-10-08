@@ -4,6 +4,8 @@ package examples
 
 	public class AnUnorderedEnum
 	{
+		Enumeration.registerClass(AnUnorderedEnum);
+		
 		[Enum] public static const A:AnUnorderedEnum = _();
 		[Enum] public static const B:AnUnorderedEnum = _();
 		[Enum] public static const C:AnUnorderedEnum = _();

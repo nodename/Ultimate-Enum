@@ -1,5 +1,6 @@
 package 
 {
+	import org.flexunit.assumeThat;
 	import com.nodename.utils.Enumeration;
 	import com.nodename.utils.getClassName;
 	
@@ -39,6 +40,8 @@ package
 		
 		[Test] public function comparisonOperatorWorks():void
 		{
+			trace(AnEnum.A["valueOf"]());
+			trace(AnEnum.B["valueOf"]());
 			assertThat(AnEnum.A < AnEnum.B);
 		}
 		
@@ -61,12 +64,30 @@ package
 		This doesn't compile.  That is good.
 		[Test] public function comparisonOperatorOnUnrelatedTypesDoesntCompile():void
 		{
-			assertThat( AnEnum.A < AnotherEnum.B);
+			assertThat(AnEnum.A < AnotherEnum.B);
 		}*/
 		
 		[Test] public function enumNameWorks():void
 		{
 			assertThat(Enumeration.nameOf(AnEnum.A) == "A");
+		}
+		
+		[DataPoints] [ArrayElementType("Class")] public static function  provideEnumClasses():Array
+		{
+			return [ AnEnum ];
+		}
+		
+		[DataPoints] [ArrayElementType("String")] public static function  provideStaticMemberNames():Array
+		{
+			return [ "A" ];
+		}
+		
+		[Theory] public function enumNameWorksInGeneral(enumClass:Class, staticMemberName:String):void
+		{
+			const staticMember:* = enumClass[staticMemberName];
+			assumeThat(staticMember, isAnEnumValueOf(enumClass));
+			
+			assertThat(staticMemberName, equalTo(Enumeration.nameOf(staticMember)));
 		}
 		
 		[Test] public function iterationOfOneEnumTypeWorks():void
@@ -136,11 +157,12 @@ package
 			assertThat(newEnum, strictlyEqualTo(anEnum));
 		}
 		
-		[Test(expects="com.nodename.utils.EnumerationError")] public function serializationOfBadEnumDoesntWork():void
+		[Test] public function serializationOfBadEnumDoesntWork():void
 		{
 			const testString:String = "TestString";
 			const buffer:ByteArray = new ByteArray();
 			const serialized:Boolean = Enumeration.serialize(testString, buffer);
+			assertFalse(serialized);
 		}
 		
 		[Test] public function deserializationOfBadQualifiedClassNameReturnsNull():void

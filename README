@@ -8,7 +8,7 @@ closed: programmer may neither add nor remove values at run time
 generic: an enumerated type should not be required to extend any particular base class,
 	nor should its constructor be required to have any particular parameter types
 
-derivable: ability to define a derived enumerated type each of whose values IS-A parent enumerated type
+extensible: ability to define a derived enumerated type each of whose values IS-A parent enumerated type
 
 orderable: programmer should be able to specify an ordering on the set if desired. There shall
 	be no implicit ordering based on the order of declaration.
@@ -16,6 +16,8 @@ orderable: programmer should be able to specify an ordering on the set if desire
 iterable: programmer should be able to iterate over the values of the type
 	or over the union of the values of more than one type (derived or not),
 	in the order (if any) that the programmer has specified
+
+comparable: comparison operators > >= < <= should work by comparing the ordering of the enumerated values
 
 non-exclusive: programmer should be able to declare other public static members of the class that are not
 	included in the set of enumerated values, for example a default value referring to one of the enumerated
@@ -31,5 +33,6 @@ Implementation
 The enumerated type corresponding to an enumClass consists of the static consts of the enumClass
 that are of type enumClass and are tagged with [Enum].  The Enum tag allows an optional integer parameter named "ordinal".
 
-In addition, the class must call Enumeration.map() as a static initializer, with itself as argument;
-for example a class MyEnum should call Enumeration.map(MyEnum).
+The class must be registered with the call Enumeration.registerClass(classObject) before any of the enum operations are used.
+Typically, the class itself will call Enumeration.registerClass() as a static initializer, with itself as argument;
+for example a class MyEnum should call Enumeration.registerClass(MyEnum).

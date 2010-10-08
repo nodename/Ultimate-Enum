@@ -4,6 +4,8 @@ package examples
 	
 	public class GenericThing
 	{
+		Enumeration.registerClass(GenericThing);
+		
 		[Enum(ordinal=0)] public static const A:GenericThing = _("Small Thing");
 		[Enum(ordinal=1)] public static const B:GenericThing = _("Medium Thing");
 		[Enum(ordinal=2)] public static const C:GenericThing = _("Large Thing");

@@ -4,6 +4,8 @@ package examples
 
 	public class AnEnum
 	{
+		Enumeration.registerClass(AnEnum);
+		
 		[Enum(ordinal=1)] public static const B:AnEnum = _();
 		[Enum(ordinal=2)] public static const C:AnEnum = _();
 		[Enum(ordinal=0)] public static const A:AnEnum = _();
@@ -12,6 +14,7 @@ package examples
 		public static const unenumeratedValue:AnEnum = _();
 		public static const defaultValue:AnEnum = A;
 		
+		// Lock is protected to support an Enum class derived from this one: see ADerivedEnum
 		protected static const LOCK:Object = {};
 		private static function _():AnEnum
 		{
