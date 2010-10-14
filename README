@@ -36,3 +36,5 @@ that are of type enumClass and are tagged with [Enum].  The Enum tag allows an o
 The class must be registered with the call Enumeration.registerClass(classObject) before any of the enum operations are used.
 Typically, the class itself will call Enumeration.registerClass() as a static initializer, with itself as argument;
 for example a class MyEnum should call Enumeration.registerClass(MyEnum).
+
+You can download the compiled swc to link into your projects, or build from source.  If you build from source, be sure to use the compiler flag keep-as3-metadata+=Enum in your library (or main program, if you build Ultimate Enum directly into it) to preserve the [Enum] tags in your enumerated classes.
